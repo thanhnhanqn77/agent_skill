@@ -1,0 +1,6 @@
+interface:
+  display_name: "AIC Video Retrieval"
+  short_description: "Nhập query trực tiếp để tìm video và trả lời AIC"
+  default_prompt: "Dùng $aic-video-retrieval xử lý query tôi nhập dưới đây, tự xác định KIS/QA/TRAKE và trả kết quả kèm bằng chứng trong chat. Query: "
+policy:
+  allow_implicit_invocation: true
