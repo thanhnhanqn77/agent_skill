@@ -69,7 +69,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=["doctor", "openapi", *OPERATIONS])
     parser.add_argument("--base-url", default=os.environ.get("AIC_API_BASE_URL", "http://127.0.0.1:8000"))
-    parser.add_argument("--payload", type=Path, help="UTF-8 JSON file (or omit and pass JSON on stdin)")
+    parser.add_argument("--payload", help="JSON string or path to UTF-8 JSON file (or omit and pass JSON on stdin)")
     parser.add_argument("--output", type=Path, help="Save full JSON response")
     parser.add_argument("--timeout", type=float, default=90)
     args = parser.parse_args(argv)
@@ -81,7 +81,14 @@ def main(argv=None):
         else:
             if not args.payload and sys.stdin.isatty():
                 parser.error("provide --payload or pipe a JSON object on stdin")
-            raw = args.payload.read_text(encoding="utf-8-sig") if args.payload else sys.stdin.read()
+            if args.payload:
+                try:
+                    p = Path(args.payload)
+                    raw = p.read_text(encoding="utf-8-sig") if p.is_file() else args.payload
+                except OSError:
+                    raw = args.payload
+            else:
+                raw = sys.stdin.read()
             payload = json.loads(raw)
             if not isinstance(payload, dict):
                 raise ValueError("payload must be a JSON object")

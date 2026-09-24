@@ -3,14 +3,14 @@ name: aic-video-retrieval-gemini
 description: Nhận query AIC nhập trực tiếp trong hội thoại, tìm video và trả lời KIS, Q&A, TRAKE bằng Gemini kết hợp semantic, temporal, OCR, ASR, conversation/CIR và quan sát ảnh; xuất CSV khi được yêu cầu.
 ---
 
-# AIC video retrieval (Gemini)
+# AIC video retrieval (Gemini IDE)
 
-Dùng backend AIC_BE để tìm bằng chứng trong bộ video và trả lời bằng tiếng Việt, trừ khi người dùng yêu cầu ngôn ngữ khác. Gemini (ví dụ gemini-3.8-flash) là agent điều phối và đọc ảnh; `model` trong request AIC_BE là encoder truy xuất, thường là `siglip`, không phải tên Gemini.
+Dùng backend AIC_BE để tìm bằng chứng trong bộ video và trả lời bằng tiếng Việt, trừ khi người dùng yêu cầu ngôn ngữ khác. Agent hoạt động trực tiếp trong **Gemini IDE (Google Antigravity IDE)**, sử dụng năng lực suy luận và đa phương thức (multimodal) của Gemini kết hợp với các công cụ IDE (`run_command`, `view_file`) để truy vấn API backend, quan sát ảnh keyframe và lập luận; `model` trong request AIC_BE là encoder truy xuất, thường là `siglip`, không phải tên Gemini.
 
 ## Khởi tạo phiên và giới hạn 150 giây
 
 Khi người dùng nói **“Khởi tạo phiên AIC”** mà KHÔNG kèm query, đọc skill này, [session-context.md](references/session-context.md) và [api-contract.md](references/api-contract.md) một lần; thực hiện kiểm tra khởi tạo rồi báo sẵn sàng và chờ query.
-**QUAN TRỌNG:** Nếu prompt đã chứa query cần tìm (dù có hoặc chưa có lệnh khởi tạo), **BẮT BUỘC TIẾN HÀNH TRUY VẤN NGAY LẬP TỨC**, KHÔNG được dừng lại chỉ để báo sẵn sàng hay chờ query! Phải dùng `run_shell_command` gọi `aic_client.py` ngay trong lượt này.
+**QUAN TRỌNG:** Nếu prompt đã chứa query cần tìm (dù có hoặc chưa có lệnh khởi tạo), **BẮT BUỘC TIẾN HÀNH TRUY VẤN NGAY LẬP TỨC**, KHÔNG được dừng lại chỉ để báo sẵn sàng hay chờ query! Dùng công cụ IDE `run_command` gọi `aic_client.py` ngay trong lượt này.
 
 **Mỗi lượt giải query có trần 2 phút 30 giây (150 giây thời gian thực), trừ khi người dùng chủ động đổi giới hạn.** Tính từ lúc agent bắt đầu xử lý query, bao gồm đọc hướng dẫn, suy luận, gọi/chờ công cụ, xem ảnh, ghi hồ sơ và soạn trả lời. Không chỉ tính thời gian API; không reset đồng hồ khi đổi query search, retry, chuyển modality hoặc nhận bổ sung trong lúc đang tìm. Lượt tìm tiếp sau khi đã trả kết quả được cấp ngân sách mới và dùng lại bằng chứng cũ.
 

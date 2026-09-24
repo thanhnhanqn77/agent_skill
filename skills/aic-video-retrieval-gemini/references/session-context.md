@@ -6,7 +6,7 @@ Cập nhật từ phiên vận hành 2026-09-23/24 tại `D:/AIC/BE`. Đây là 
 
 1. Giữ cấu hình người dùng nếu có; nếu không, dùng các đường dẫn dưới đây. Đọc `api-contract.md` một lần để biết payload và hệ chỉ số.
 2. Nếu prompt CHƯA CÓ query và người dùng chỉ yêu cầu "Khởi tạo phiên AIC": chạy `python .agents/skills/aic-video-retrieval-gemini/scripts/aic_client.py doctor --timeout 5`, kiểm tra tồn tại thư mục media/map rồi báo ngắn sẵn sàng và chờ query.
-3. **TUYỆT ĐỐI QUAN TRỌNG:** Nếu prompt ĐÃ CÓ query cần tìm: **BỎ QUA TOÀN BỘ BƯỚC BÁO SẴN SÀNG / CHỜ QUERY NÀY!** Không được báo sẵn sàng rồi dừng lại; bắt buộc dùng `run_shell_command` thực hiện truy vấn video cho query ngay lập tức và trả kết quả JSON hoàn chỉnh!
+3. **TUYỆT ĐỐI QUAN TRỌNG:** Nếu prompt ĐÃ CÓ query cần tìm: **BỎ QUA TOÀN BỘ BƯỚC BÁO SẴN SÀNG / CHỜ QUERY NÀY!** Không được báo sẵn sàng rồi dừng lại; bắt buộc dùng `run_command` thực hiện truy vấn video cho query ngay lập tức và trả kết quả JSON hoàn chỉnh!
 
 ## Cấu hình đã xác minh
 
@@ -14,7 +14,7 @@ Cập nhật từ phiên vận hành 2026-09-23/24 tại `D:/AIC/BE`. Đây là 
 | --- | --- |
 | Workspace | `D:/AIC/BE` |
 | Backend | `AIC_API_BASE_URL` nếu đã đặt, mặc định `http://127.0.0.1:8000` |
-| Client | `.agents/skills/aic-video-retrieval/scripts/aic_client.py`, Python 3.10+ |
+| Client | `.agents/skills/aic-video-retrieval-gemini/scripts/aic_client.py`, Python 3.10+ |
 | Encoder | `siglip`; semantic baseline và fuse FACR đã trả kết quả |
 | Ảnh local | `D:/data_aic/keyframes/{video}/{keyframe_id:06d}.webp` |
 | Map local | `D:/data_aic/map/{video}.csv` |
@@ -28,7 +28,7 @@ Cập nhật từ phiên vận hành 2026-09-23/24 tại `D:/AIC/BE`. Đây là 
 
 - Lượt tìm trước bị kéo dài do nhiều lượt xem ảnh rời, đổi câu semantic tương tự và rà frame sau khi đã có ứng viên mạnh. Giữ hạn của SKILL.md; xem vài ảnh đại diện trước, gom đọc độc lập, chỉ lấy lân cận từ hàng map của ứng viên mạnh nhất. Không cố đủ 5 kết quả khi chỉ có một ứng viên hữu ích.
 - Semantic/FACR không chứng minh số lượng, màu chính xác hay phủ định “chỉ một”. Nón phối đỏ–xanh không đồng nghĩa toàn bộ nón đỏ. Người có kính bị che không đồng nghĩa không đeo kính. Ghi mâu thuẫn và chọn ứng viên tốt nhất hiện có khi hết giờ.
-- Dùng `view_image` trực tiếp cho ảnh local. Đường dẫn/điểm search không thay thế việc xem ảnh. Một bảng ảnh có nhãn video/ID có thể tiết kiệm lượt nếu Pillow đã có; không cài thư viện giữa query. `sharp` từng lỗi import trong Node REPL; đừng lặp lại hướng này nếu chưa có lý do mới.
+- Dùng `view_file` trực tiếp cho ảnh local. Đường dẫn/điểm search không thay thế việc xem ảnh. Một bảng ảnh có nhãn video/ID có thể tiết kiệm lượt nếu Pillow đã có; không cài thư viện giữa query.
 - Lấy các ID ảnh từ response/map hoặc kiểm tra file tồn tại trước; không tự tạo dải vượt số frame. Một lần tạo bảng ảnh trước đã lỗi vì yêu cầu keyframe không tồn tại.
 - PowerShell đọc văn bản bằng `Get-Content -Encoding UTF8`; ghi payload thành JSON UTF-8, gọi client với `--payload`/`--output`. Không in toàn bộ source, response dài hoặc danh sách công cụ vào context khi chỉ cần trường cụ thể. Không nối các lần đọc phụ thuộc vào cuối request mạng dài.
 - `exec_command` từng lỗi khởi tạo sandbox; đây là lỗi runner, không phải AIC mất kết nối. Quyền hiện tại do môi trường phiên quyết định: không hard-code escalation/bypass. Nếu lỗi lặp lại, dùng công cụ đọc file sẵn có được phép hoặc báo phần bị chặn trong hạn; không sửa môi trường để giải một query.
