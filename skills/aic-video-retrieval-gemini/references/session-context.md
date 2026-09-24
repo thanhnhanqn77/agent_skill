@@ -4,10 +4,9 @@ Cập nhật từ phiên vận hành 2026-09-23/24 tại `D:/AIC/BE`. Đây là 
 
 ## Khởi tạo tối thiểu
 
-1. Giữ cấu hình người dùng nếu có; nếu không, dùng các đường dẫn dưới đây. Đọc `api-contract.md` một lần để biết payload và hệ chỉ số. Chưa cần query-playbook, submission hay DOCX khi chưa có query.
-2. Chạy `python .agents/skills/aic-video-retrieval/scripts/aic_client.py doctor --timeout 5`. Lưu trạng thái route trong bộ nhớ phiên; không coi đó là model/index đã sẵn sàng. Không restart backend hoặc nạp/index lại dữ liệu.
-3. Kiểm tra tồn tại ba thư mục media/map bằng một lần gọi công cụ; không liệt kê cả corpus. Chưa cần mở ảnh/video nào. Nếu thiếu, chỉ đọc các biến media/backend cần thiết trong cấu hình FE, không in token hoặc cả `.env`.
-4. Báo ngắn: backend, encoder, media/map có truy cập được không, **150 giây/query**, rồi chờ query. Không tạo thư mục query hay chạy một query ví dụ trong lượt chỉ khởi tạo.
+1. Giữ cấu hình người dùng nếu có; nếu không, dùng các đường dẫn dưới đây. Đọc `api-contract.md` một lần để biết payload và hệ chỉ số.
+2. Nếu prompt CHƯA CÓ query và người dùng chỉ yêu cầu "Khởi tạo phiên AIC": chạy `python .agents/skills/aic-video-retrieval-gemini/scripts/aic_client.py doctor --timeout 5`, kiểm tra tồn tại thư mục media/map rồi báo ngắn sẵn sàng và chờ query.
+3. **TUYỆT ĐỐI QUAN TRỌNG:** Nếu prompt ĐÃ CÓ query cần tìm: **BỎ QUA TOÀN BỘ BƯỚC BÁO SẴN SÀNG / CHỜ QUERY NÀY!** Không được báo sẵn sàng rồi dừng lại; bắt buộc dùng `run_shell_command` thực hiện truy vấn video cho query ngay lập tức và trả kết quả JSON hoàn chỉnh!
 
 ## Cấu hình đã xác minh
 
